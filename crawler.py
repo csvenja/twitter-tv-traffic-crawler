@@ -8,32 +8,28 @@ import json
 class TwitterTVTrafficCrawler(object):
 
     url = 'https://www.quantcast.com/twitch.tv/traffic'
-    results = {}
 
     def get_data(self):
-        if not self.results:
-            self.get_country_list()
-            for country in self.country_list:
-                page = self.get_page_for_country(country)
-                info = self.get_info_from_page(page)
-                self.results[country] = info
-        return self.results
+        country_list = self._get_country_list()
+        results = {}
+        for country in country_list:
+            results[country] = self._get_info_of_country(country)
+        return results
 
-    def get_country_list(self):
-        raw_page = requests.get(self.url, params={'country': 'CN'})
-        page = BeautifulSoup(raw_page.text, 'html.parser')
-        raw_country_list_string = page.find(key='countryList').contents[0]
-        raw_country_list = json.loads(raw_country_list_string)
-        self.country_list = [country['code'] for country in raw_country_list]
+    def _get_country_list(self):
+        page = self._get_page_for_country('CN')
+        raw_country_list = page.find(key='countryList').contents[0]
+        country_list = json.loads(raw_country_list)
+        return [country.get('code') for country in country_list]
 
-    def get_page_for_country(self, country):
+    def _get_info_of_country(self, country):
+        page = self._get_page_for_country(country)
+        raw_metrics = page.find(key='profileSummary').contents[0]
+        return json.loads(raw_metrics).get('metrics')
+
+    def _get_page_for_country(self, country):
         raw_page = requests.get(self.url, params={'country': country})
-        page = BeautifulSoup(raw_page.text, 'html.parser')
-        return page
-
-    def get_info_from_page(self, page):
-        raw_metric = page.find(key='profileSummary').contents[0]
-        return json.loads(raw_metric).get('metrics')
+        return BeautifulSoup(raw_page.text, 'html.parser')
 
 if __name__ == '__main__':
     crawler = TwitterTVTrafficCrawler()
