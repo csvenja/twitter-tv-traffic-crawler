@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import json
 
 
-class TwitterTVCrawler(object):
+class TwitterTVTrafficCrawler(object):
 
     url = 'https://www.quantcast.com/twitch.tv/traffic'
     results = {}
@@ -36,7 +36,7 @@ class TwitterTVCrawler(object):
         return json.loads(raw_metric).get('metrics')
 
 if __name__ == '__main__':
-    crawler = TwitterTVCrawler()
+    crawler = TwitterTVTrafficCrawler()
     with open('metrics.json', 'w') as f:
         data = crawler.get_data()
         f.write(json.dumps(data, ensure_ascii=False, indent=2))
