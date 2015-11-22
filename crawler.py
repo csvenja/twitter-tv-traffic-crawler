@@ -13,11 +13,10 @@ class TwitterTVCrawler(object):
     def get_data(self):
         if not self.results:
             self.get_country_list()
-            # for country in self.country_list:
-            country = 'US'
-            page = self.get_page_for_country(country)
-            info = self.get_info_from_page(page)
-            self.results[country] = info
+            for country in self.country_list:
+                page = self.get_page_for_country(country)
+                info = self.get_info_from_page(page)
+                self.results[country] = info
         return self.results
 
     def get_country_list(self):
