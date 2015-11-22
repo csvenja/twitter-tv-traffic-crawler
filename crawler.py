@@ -20,14 +20,14 @@ class TwitterTVTrafficCrawler(object):
         return self.results
 
     def get_country_list(self):
-        raw_page = requests.get(self.url, data={'country': 'CN'})
+        raw_page = requests.get(self.url + '?country=CN')
         page = BeautifulSoup(raw_page.text, 'html.parser')
         raw_country_list_string = page.find(key='countryList').contents[0]
         raw_country_list = json.loads(raw_country_list_string)
         self.country_list = [country['code'] for country in raw_country_list]
 
     def get_page_for_country(self, country):
-        raw_page = requests.get(self.url, data={'country': country})
+        raw_page = requests.get(self.url + '?country=' + country)
         page = BeautifulSoup(raw_page.text, 'html.parser')
         return page
 
